@@ -10,7 +10,6 @@
 // ==/UserScript==
 
 (function () {
-    
     const originalXHROpen = XMLHttpRequest.prototype.open;
     const originalXHRGetResponse = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, 'response');
     let shellshockjs
@@ -30,13 +29,23 @@
         }
     });
 
+    const getScrambled=function(){return Array.from({length: 10}, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('')}
+    
+    
+
+
+
     const applyLibertyMutual = function(js) {
         const vars=[];
         const getVar=function(name,regex){
-            const funcName = eval(new RegExp(regex)+`.exec(script)[1]`);
-            // vars[name]=
+            const varName=eval(new RegExp(regex)+`.exec(js)[1]`);
+            vars[name]=varName;
+            console.log('%cFound var! Saved '+varName+' as '+name, 'color: green; font-weight: bold;');
         };
         const replace=function(oldThing,newThing){js=js.replace(oldThing,newThing)};
+
+        console.log('%cLIBERTYMUTUAL INJECTION STAGE 1: GATHER VARS', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
+        getVar("PLAYERS","\\]\\.actor&&\\(([a-zA-Z]+)\\[")
 
         replace("Not playing in iframe", "LIBERTYMUTUAL ACTIVE");
         return js;
