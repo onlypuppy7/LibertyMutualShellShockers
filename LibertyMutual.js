@@ -1,8 +1,10 @@
 // ==UserScript==
 // @name         LibertyMutualV1 For Shell Shockers
+// @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
+// @license      GPL-3.0
 // @version      1.0.0
 // @author       onlypuppy7
-// @description  ESP.
+// @description  FOSS ESP.
 // @match        https://shellshock.io/*
 // @grant        none
 // @run-at       document-start
