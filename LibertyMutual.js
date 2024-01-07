@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @version      1.0.0
 // @author       onlypuppy7
-// @description  Enhanced Client.
+// @description  ESP.
 // @match        https://shellshock.io/*
 // @grant        none
 // @run-at       document-start
