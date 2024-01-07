@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.0.0
+// @version      1.0.1
 // @author       onlypuppy7
 // @description  FOSS ESP.
 // @match        https://shellshock.io/*
@@ -62,6 +62,7 @@
         console.log('%cATTEMPTING TO START LIBERTYMUTUAL', 'color: magenta; font-weight: bold; font-size: 1.5em; text-decoration: underline;');
 
         console.log('%cLIBERTYMUTUAL INJECTION STAGE 1: GATHER VARS', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
+        //Credit for idea to gather vars: helloworld, PacyTense. Also common sense.
         getVar("PLAYERS","\\]\\.actor&&\\(([a-zA-Z]+)\\[")
         getVar("YOURPLAYER","&&([a-zA-Z]+)\\.grenadeCountdown<=0\\)this\\.cancelGrenade")
         getVar("BABYLONJS",";([a-zA-Z]+)\\.Effect\\.ShadersStore=")
