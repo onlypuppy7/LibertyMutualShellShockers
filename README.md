@@ -1,3 +1,6 @@
 # LibertyMutualShellShockers
-Now with 100% less infringement!
+Basic ESP.
+
+To come: aimbot, tracer lines.
+
 GitHub page: https://github.com/onlypuppy7/LibertyMutualShellShockers
