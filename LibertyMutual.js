@@ -12,6 +12,8 @@
 // ==/UserScript==
 
 (function () {
+    //Credit for script injection code: AI. ChatGPT prompt: "tampermonkey script. how can i make it grab a javascript file as it's loaded. if it detects the javascript file, make it apply modifications to it via regex? using XMLHttpRequest"
+    //Credit for idea to use XMLHttpRequest: A3+++
     const originalXHROpen = XMLHttpRequest.prototype.open;
     const originalXHRGetResponse = Object.getOwnPropertyDescriptor(XMLHttpRequest.prototype, 'response');
     let shellshockjs
@@ -37,6 +39,7 @@
 
     //scrambled... geddit????
     const getScrambled=function(){return Array.from({length: 10}, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('')}
+    //Credit for this: me
     const createAnonFunction=function(name,func){
         const funcName=getScrambled();
         window[funcName]=func;
@@ -44,6 +47,7 @@
         functionNames[name]=funcName
     };
 
+    //Credit for idea to use regexes to dynamically create the injected script: helloworld (although it is not a new concept)
     const applyLibertyMutual = function(js) {
         const vars=[];
         let injectionString="";
@@ -82,8 +86,10 @@
         ss.PLAYERS.forEach(PLAYER=>{
             if (PLAYER) {
                 PLAYER.timecode=timecode;
+                //Partial credit for player filtering: PacyTense. Also just common sense.
                 if ((!PLAYER.generatedESP)&&((PLAYER!==ss.YOURPLAYER)&&(PLAYER.hp>0)&&((!ss.YOURPLAYER.team)||(PLAYER.team!==ss.YOURPLAYER.team)))) {
-                    const boxSize = {width: 0.5, height: 0.75, depth: 0.5};
+                    //Credit for box from lines code: AI. ChatGPT prompt: "how can i create a box out of lines in babylon.js?"
+                    const boxSize = {width: 0.4, height: 0.65, depth: 0.4};
                     const vertices = [
                         new ss.BABYLONJS.Vector3(-boxSize.width / 2, 0, -boxSize.depth / 2),
                         new ss.BABYLONJS.Vector3(boxSize.width / 2, 0, -boxSize.depth / 2),
@@ -101,11 +107,12 @@
                         lines.push([vertices[i], vertices[i + 4]]);
                     };
                     const box = ss.BABYLONJS.MeshBuilder.CreateLineSystem('boxLines', { lines }, PLAYER.actor.scene);
+                    //ChatGPT prompt: "how can i make an object anchored to another object, change its color, set its line thickness and have it render on top of everything else?"
                     box.color = new ss.BABYLONJS.Color3(1, 0, 0);
                     box.renderingGroupId = 1;
+                    box.thinLineWidth = 2.5;
                     box.parent=PLAYER.actor.mesh;
                     PLAYER.box=box;
-                    //stuff
                     PLAYER.generatedESP=true;
                     boxArray.push([box,PLAYER]);
                 };
@@ -114,6 +121,7 @@
         for ( let i=0;i<boxArray.length;i++) {
             if (boxArray[i][1] && boxArray[i][1].timecode==timecode) { //still exists
             } else {
+                //Credit for info: AI. ChatGPT prompt: "how can i delete an object in babylon.js?"
                 boxArray[i][0].dispose();
                 boxArray.splice(i,1);
             };
