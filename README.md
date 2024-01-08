@@ -1,5 +1,5 @@
 # LibertyMutualShellShockers
-Basic ESP and aimlock.
+Basic ESP and aimlock for shellshock.io
 
 To come: tracer lines.
 
