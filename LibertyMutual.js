@@ -2,9 +2,9 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.0.2
+// @version      1.0.3
 // @author       onlypuppy7
-// @description  FOSS ESP and Aimbot. Hold right mouse button to aimlock.
+// @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
 // @grant        none
 // @run-at       document-start
@@ -18,6 +18,7 @@
     //This script is more of a template than a functioning tool. If you're modifying this, you can add a GUI to start!
 
     const enableESP=true; //turn to false for off
+    const enableTracers=true; //turn to false for off
 
     //Credit for script injection code: AI. ChatGPT prompt: "tampermonkey script. how can i make it grab a javascript file as it's loaded. if it detects the javascript file, make it apply modifications to it via regex? using XMLHttpRequest"
     //Credit for idea to use XMLHttpRequest: A3+++
@@ -104,6 +105,14 @@
 
     createAnonFunction("LIBERTYMUTUAL",function() {
         let TARGETED;
+        let CROSSHAIRS=new ss.BABYLONJS.Vector3();
+        CROSSHAIRS.copyFrom(ss.YOURPLAYER.actor.mesh.position);
+        const horizontalOffset = Math.sin(ss.YOURPLAYER.actor.mesh.rotation.y);
+        const verticalOffset = Math.sin(-ss.YOURPLAYER.pitch);
+        CROSSHAIRS.x+=horizontalOffset;
+        CROSSHAIRS.y+=verticalOffset+0.4;
+        CROSSHAIRS.z+=Math.cos(ss.YOURPLAYER.actor.mesh.rotation.y);
+
         const timecode=Date.now();
         let minValue=99999;
         ss.PLAYERS.forEach(PLAYER=>{
@@ -112,7 +121,7 @@
                 //Partial credit for enemy player filtering: PacyTense. Also just common sense.
                 if (((PLAYER!==ss.YOURPLAYER)&&(PLAYER.hp>0)&&((!ss.YOURPLAYER.team)||(PLAYER.team!==ss.YOURPLAYER.team)))) {
                     //ESP CODE
-                    if ((!PLAYER.generatedESP)&&enableESP) {
+                    if ((!PLAYER.generatedESP)) {
                         //Credit for box from lines code: AI. ChatGPT prompt: "how can i create a box out of lines in babylon.js?"
                         //ESP BOXES
                         const boxSize = {width: 0.4, height: 0.65, depth: 0.4};
@@ -134,14 +143,25 @@
                         };
                         const box = ss.BABYLONJS.MeshBuilder.CreateLineSystem('boxLines', { lines }, PLAYER.actor.scene);
                         //ChatGPT prompt: "how can i make an object anchored to another object, change its color, and have it render on top of everything else? babylon.js"
-                        box.color = new ss.BABYLONJS.Color3(1, 0, 0);
+                        box.color = new ss.BABYLONJS.Color3(1, 1, 1);
                         box.renderingGroupId = 1;
                         box.parent=PLAYER.actor.mesh;
+                        //TRACER LINES
+                        const tracers=ss.BABYLONJS.MeshBuilder.CreateLines("tracerLines", { points: [PLAYER.actor.mesh.position, CROSSHAIRS] }, PLAYER.actor.scene);
+                        tracers.color=new ss.BABYLONJS.Color3(1, 1, 1);
+                        tracers.renderingGroupId=1;
+                        
                         PLAYER.box=box;
-                        //TODO: ESP TRACERS
+                        PLAYER.tracers=tracers;
                         PLAYER.generatedESP=true;
-                        ESPArray.push([box,PLAYER]);
+                        ESPArray.push([box,tracers,PLAYER]);
                     };
+                    //update the lines
+                    PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER.actor.mesh.position.x, PLAYER.actor.mesh.position.y, PLAYER.actor.mesh.position.z]);
+
+                    PLAYER.box.visibility=enableESP;
+                    PLAYER.tracers.visibility=enableTracers;
+
                     //AIMBOT CODE
                     //Credit: This section is mostly common sense, and could be made by most decent programmers. It is still worth mentioning PacyTense used a functionally equivalent thing similar to this this before me 4 years ago.
                     const distance=ss.BABYLONJS.Vector3.Distance(ss.YOURPLAYER,PLAYER);
@@ -163,10 +183,11 @@
             };
         });
         for ( let i=0;i<ESPArray.length;i++) {
-            if (ESPArray[i][1] && ESPArray[i][1].timecode==timecode) { //still exists
+            if (ESPArray[i][2] && ESPArray[i][2].timecode==timecode) { //still exists
             } else {
                 //Credit for info: AI. ChatGPT prompt: "how can i delete an object in babylon.js?"
                 ESPArray[i][0].dispose();
+                ESPArray[i][1].dispose();
                 ESPArray.splice(i,1);
             };
         };
