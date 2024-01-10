@@ -1,7 +1,5 @@
 # LibertyMutual ShellShockers
-Basic ESP and aimlock for shellshock.io aka Shell Shockers
-
-To come: tracer lines.
+Basic ESP, tracers and aimlock for shellshock.io aka Shell Shockers
 
 GitHub page: https://github.com/onlypuppy7/LibertyMutualShellShockers
 
