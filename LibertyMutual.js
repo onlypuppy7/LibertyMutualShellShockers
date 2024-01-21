@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.0.3
+// @version      1.0.4
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -119,7 +119,7 @@
             if (PLAYER) {
                 PLAYER.timecode=timecode;
                 //Partial credit for enemy player filtering: PacyTense. Also just common sense.
-                if (((PLAYER!==ss.YOURPLAYER)&&(PLAYER.hp>0)&&((!ss.YOURPLAYER.team)||(PLAYER.team!==ss.YOURPLAYER.team)))) {
+                if (((PLAYER!==ss.YOURPLAYER)&&((!ss.YOURPLAYER.team)||(PLAYER.team!==ss.YOURPLAYER.team)))) {
                     //ESP CODE
                     if ((!PLAYER.generatedESP)) {
                         //Credit for box from lines code: AI. ChatGPT prompt: "how can i create a box out of lines in babylon.js?"
@@ -160,7 +160,7 @@
                     PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER.actor.mesh.position.x, PLAYER.actor.mesh.position.y, PLAYER.actor.mesh.position.z]);
 
                     PLAYER.box.visibility=enableESP;
-                    PLAYER.tracers.visibility=enableTracers;
+                    PLAYER.tracers.visibility=(PLAYER.playing&&enableTracers);
 
                     //AIMBOT CODE
                     //Credit: This section is mostly common sense, and could be made by most decent programmers. It is still worth mentioning PacyTense used a functionally equivalent thing similar to this this before me 4 years ago.
