@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.0.4
+// @version      1.0.5
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -42,6 +42,7 @@
     });
     //VAR STUFF
     let F=[];
+    let H={};
     let functionNames=[];
     let ESPArray=[];
     let RMB=false;
@@ -67,6 +68,23 @@
         F[name]=window[funcName];
         functionNames[name]=funcName
     };
+    const findKeyWithProperty = function(obj, propertyToFind) {
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                if (key === propertyToFind) {
+                    return [key];
+                } else if (
+                    typeof obj[key] === 'object' &&
+                    obj[key] !== null &&
+                    obj[key].hasOwnProperty(propertyToFind)
+                ) {
+                    return key;
+                };
+            };
+        };
+        // Property not found
+        return null;
+    };
 
     //Credit for idea to use regexes to dynamically create the injected script: helloworld (although it is not a new concept)
     const applyLibertyMutual = function(js) {
@@ -84,18 +102,25 @@
 
         console.log('%cLIBERTYMUTUAL INJECTION STAGE 1: GATHER VARS', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
         //Credit for idea to gather vars: helloworld, PacyTense. Also common sense.
-        getVar("PLAYERS","\\]\\.actor&&\\(([a-zA-Z]+)\\[")
-        getVar("YOURPLAYER","&&([a-zA-Z]+)\\.grenadeCountdown<=0\\)this\\.cancelGrenade")
-        getVar("BABYLONJS",";([a-zA-Z]+)\\.Effect\\.ShadersStore=")
+        getVar("PLAYERS", '([a-zA-Z]+)\\[[a-zA-Z]+\\]\\.hp=100');
+        getVar("MYPLAYER", '\\.([a-zA-Z]+)\\.addArrayInPlace\\(');
+        getVar("BABYLONJS", ';([a-zA-Z]+)\\.TransformNode\\.prototype\\.setVisible');
 
         console.log('%cLIBERTYMUTUAL INJECTION STAGE 2: INJECT VAR RETRIEVAL FUNCTION AND MAIN LOOP', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
-        let match=js.match(/\.engine\.runRenderLoop\(function\(\)\{([a-zA-Z]+)\(/);
-        replace(`\.engine\.runRenderLoop\(function\(\)\{${match[1]}\(`,`.engine.runRenderLoop(function (){${match[1]}(),window["${functionNames.retrieveFunctions}"]({${injectionString}}`);
+        match=js.match(/\.engine\.\$\(function\(\)\{([a-zA-Z]+)\(/);
+        console.log(match);
+        js = js.replace('.engine.$(function(){'+match[1]+'(),',`.engine.$(function(){if (window["${functionNames.retrieveFunctions}"]({${injectionString}},true)){return};${match[1]}();`);
         console.log('%cSuccess! Variable retrieval and main loop hooked.', 'color: green; font-weight: bold;');
 
-        console.log('%cLIBERTYMUTUAL INJECTION STAGE 3: INJECT CULL INHIBITING FUNCTION', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
-        js = js.replace(`if(${js.match(/playing&&!([a-zA-Z]+)&&/)[1]})`,`if(true)`);
+        match=js.match(/&&!([a-zA-Z]+)&&[a-zA-Z]+\(\)\}/);
+        js = js.replace(`if(${match[1]})`,`if(true)`);
         console.log('%cSuccess! Cull inhibition hooked.', 'color: green; font-weight: bold;');
+
+        H.playing = js.match(/this\.hp=[a-zA-Z]+\.hp,this\.([a-zA-Z]+)=[a-zA-Z]+\.[a-zA-Z]+,this/)[1];
+        H.MeshBuilder = js.match(/\.([a-zA-Z]+)\.CreateLineSystem\("/)[1];
+        H.CreateLines = js.match(/\.([a-zA-Z]+)\("yPosMesh",\{points/)[1];
+
+        console.log(H);
 
         replace("Not playing in iframe", "LIBERTYMUTUAL ACTIVE!");
         return js;
@@ -104,14 +129,17 @@
     createAnonFunction("retrieveFunctions",function(vars) { ss=vars ; F.LIBERTYMUTUAL() });
 
     createAnonFunction("LIBERTYMUTUAL",function() {
+        ss.BABYLONJS.Vector3 = ss.MYPLAYER.constructor.v1.constructor;
+        H.actor = findKeyWithProperty(ss.MYPLAYER,"mesh");
+
         let TARGETED;
         let CROSSHAIRS=new ss.BABYLONJS.Vector3();
-        CROSSHAIRS.copyFrom(ss.YOURPLAYER.actor.mesh.position);
-        const horizontalOffset = Math.sin(ss.YOURPLAYER.actor.mesh.rotation.y);
-        const verticalOffset = Math.sin(-ss.YOURPLAYER.pitch);
+        CROSSHAIRS.copyFrom(ss.MYPLAYER[H.actor].mesh.position);
+        const horizontalOffset = Math.sin(ss.MYPLAYER[H.actor].mesh.rotation.y);
+        const verticalOffset = Math.sin(-ss.MYPLAYER.pitch);
         CROSSHAIRS.x+=horizontalOffset;
         CROSSHAIRS.y+=verticalOffset+0.4;
-        CROSSHAIRS.z+=Math.cos(ss.YOURPLAYER.actor.mesh.rotation.y);
+        CROSSHAIRS.z+=Math.cos(ss.MYPLAYER[H.actor].mesh.rotation.y);
 
         const timecode=Date.now();
         let minValue=99999;
@@ -119,7 +147,7 @@
             if (PLAYER) {
                 PLAYER.timecode=timecode;
                 //Partial credit for enemy player filtering: PacyTense. Also just common sense.
-                if (((PLAYER!==ss.YOURPLAYER)&&((!ss.YOURPLAYER.team)||(PLAYER.team!==ss.YOURPLAYER.team)))) {
+                if (((PLAYER!==ss.MYPLAYER)&&((!ss.MYPLAYER.team)||(PLAYER.team!==ss.MYPLAYER.team)))) {
                     //ESP CODE
                     if ((!PLAYER.generatedESP)) {
                         //Credit for box from lines code: AI. ChatGPT prompt: "how can i create a box out of lines in babylon.js?"
@@ -141,13 +169,13 @@
                             lines.push([vertices[i + 4], vertices[(i + 1) % 4 + 4]]);
                             lines.push([vertices[i], vertices[i + 4]]);
                         };
-                        const box = ss.BABYLONJS.MeshBuilder.CreateLineSystem('boxLines', { lines }, PLAYER.actor.scene);
+                        const box = ss.BABYLONJS[H.MeshBuilder].CreateLineSystem('boxLines', { lines }, PLAYER[H.actor].scene);
                         //ChatGPT prompt: "how can i make an object anchored to another object, change its color, and have it render on top of everything else? babylon.js"
                         box.color = new ss.BABYLONJS.Color3(1, 1, 1);
                         box.renderingGroupId = 1;
-                        box.parent=PLAYER.actor.mesh;
+                        box.parent=PLAYER[H.actor].mesh;
                         //TRACER LINES
-                        const tracers=ss.BABYLONJS.MeshBuilder.CreateLines("tracerLines", { points: [PLAYER.actor.mesh.position, CROSSHAIRS] }, PLAYER.actor.scene);
+                        const tracers=ss.BABYLONJS[H.MeshBuilder][H.CreateLines]("tracerLines", { points: [PLAYER[H.actor].mesh.position, CROSSHAIRS] }, PLAYER[H.actor].scene);
                         tracers.color=new ss.BABYLONJS.Color3(1, 1, 1);
                         tracers.renderingGroupId=1;
                         
@@ -157,29 +185,29 @@
                         ESPArray.push([box,tracers,PLAYER]);
                     };
                     //update the lines
-                    PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER.actor.mesh.position.x, PLAYER.actor.mesh.position.y, PLAYER.actor.mesh.position.z]);
+                    PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER[H.actor].mesh.position.x, PLAYER[H.actor].mesh.position.y, PLAYER[H.actor].mesh.position.z]);
 
                     PLAYER.box.visibility=enableESP;
-                    PLAYER.tracers.visibility=(PLAYER.playing&&enableTracers);
+                    PLAYER.tracers.visibility=(PLAYER[H.playing]&&enableTracers);
 
                     //AIMBOT CODE
                     //Credit: This section is mostly common sense, and could be made by most decent programmers. It is still worth mentioning PacyTense used a functionally equivalent thing similar to this this before me 4 years ago.
-                    const distance=ss.BABYLONJS.Vector3.Distance(ss.YOURPLAYER,PLAYER);
+                    const distance=ss.BABYLONJS.Vector3.Distance(ss.MYPLAYER,PLAYER);
                     if (distance<minValue) {
                         TARGETED=PLAYER;
                         minValue=distance;
                     };
                 };
             };
-            if (RMB&&TARGETED&&TARGETED.playing) {
+            if (RMB&&TARGETED&&TARGETED[H.playing]) {
                 //3D maths
                 const directionVector={
-                    x: TARGETED.x-ss.YOURPLAYER.x,
-                    y: TARGETED.y-ss.YOURPLAYER.y,
-                    z: TARGETED.z-ss.YOURPLAYER.z,
+                    x: TARGETED.x-ss.MYPLAYER.x,
+                    y: TARGETED.y-ss.MYPLAYER.y,
+                    z: TARGETED.z-ss.MYPLAYER.z,
                 };
-                ss.YOURPLAYER.yaw=F.calculateYaw(directionVector);
-                ss.YOURPLAYER.pitch=F.calculatePitch(directionVector);
+                ss.MYPLAYER.yaw=F.calculateYaw(directionVector);
+                ss.MYPLAYER.pitch=F.calculatePitch(directionVector);
             };
         });
         for ( let i=0;i<ESPArray.length;i++) {
