@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.0.5
+// @version      1.0.6
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -96,24 +96,33 @@
             injectionString=injectionString+name+": "+varName+",";
             console.log('%cFound var! Saved '+varName+' as '+name, 'color: green; font-weight: bold;');
         };
-        const replace=function(oldThing,newThing){js=js.replace(oldThing,newThing)};
+        
+        const modifyJS = function(find,replace) {
+            let oldJS = js;
+            js = js.replace(find,replace);
+            if (oldJS !== js) {
+                console.log("%cReplacement successful! Injected code: "+replace, 'color: green; font-weight: bold; font-size: 0.6em; text-decoration: italic;');
+            } else {
+                console.log("%cReplacement failed! Attempted to replace "+find+" with: "+replace, 'color: red; font-weight: bold; font-size: 0.6em; text-decoration: italic;');
+            };
+        };
 
         console.log('%cATTEMPTING TO START LIBERTYMUTUAL', 'color: magenta; font-weight: bold; font-size: 1.5em; text-decoration: underline;');
 
         console.log('%cLIBERTYMUTUAL INJECTION STAGE 1: GATHER VARS', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
         //Credit for idea to gather vars: helloworld, PacyTense. Also common sense.
         getVar("PLAYERS", '([a-zA-Z]+)\\[[a-zA-Z]+\\]\\.hp=100');
-        getVar("MYPLAYER", '\\.([a-zA-Z]+)\\.addArrayInPlace\\(');
-        getVar("BABYLONJS", ';([a-zA-Z]+)\\.TransformNode\\.prototype\\.setVisible');
+        getVar("MYPLAYER", '\\),([a-zA-Z]+)\\.pitch=Math\\.clamp\\(');
+        getVar("BABYLONJS", '\\),this\\.range=([a-zA-Z]+)\\.');
 
         console.log('%cLIBERTYMUTUAL INJECTION STAGE 2: INJECT VAR RETRIEVAL FUNCTION AND MAIN LOOP', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
-        match=js.match(/\.engine\.\$\(function\(\)\{([a-zA-Z]+)\(/);
+        match=js.match(/\.engine\.([a-zA-Z]+)\(\(function\(\)\{!/);
         console.log(match);
-        js = js.replace('.engine.$(function(){'+match[1]+'(),',`.engine.$(function(){if (window["${functionNames.retrieveFunctions}"]({${injectionString}},true)){return};${match[1]}();`);
+        modifyJS('.engine.'+match[1]+'((function(){',`.engine.${match[1]}((function(){if(window["${functionNames.retrieveFunctions}"]({${injectionString}},true)){return};`);
         console.log('%cSuccess! Variable retrieval and main loop hooked.', 'color: green; font-weight: bold;');
 
-        match=js.match(/&&!([a-zA-Z]+)&&[a-zA-Z]+\(\)\}/);
-        js = js.replace(`if(${match[1]})`,`if(true)`);
+        match=js.match(/&&!([a-zA-Z]+)&&function\(\)\{if\(/);
+        modifyJS(`{if(${match[1]})`,`{if(true)`);
         console.log('%cSuccess! Cull inhibition hooked.', 'color: green; font-weight: bold;');
 
         H.playing = js.match(/this\.hp=[a-zA-Z]+\.hp,this\.([a-zA-Z]+)=[a-zA-Z]+\.[a-zA-Z]+,this/)[1];
@@ -122,13 +131,15 @@
 
         console.log(H);
 
-        replace("Not playing in iframe", "LIBERTYMUTUAL ACTIVE!");
+        modifyJS("Not playing in iframe", "LIBERTYMUTUAL ACTIVE!");
         return js;
     };
 
     createAnonFunction("retrieveFunctions",function(vars) { ss=vars ; F.LIBERTYMUTUAL() });
 
     createAnonFunction("LIBERTYMUTUAL",function() {
+        globalSS = ss;
+
         ss.BABYLONJS.Vector3 = ss.MYPLAYER.constructor.v1.constructor;
         H.actor = findKeyWithProperty(ss.MYPLAYER,"mesh");
 
