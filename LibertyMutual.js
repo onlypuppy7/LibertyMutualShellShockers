@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.1.0
+// @version      1.1.1
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -102,7 +102,7 @@
 
         let hash = CryptoJS.SHA256(js).toString(CryptoJS.enc.Hex);
         let clientKeys;
-        onlineClientKeys = fetchTextContent("https://raw.githubusercontent.com/StateFarmNetwork/client-keys/main/libemrtymutual_"+hash+".json"); //credit: me :D
+        onlineClientKeys = fetchTextContent("https://raw.githubusercontent.com/StateFarmNetwork/client-keys/main/libertymutual_"+hash+".json"); //credit: me :D
 
         if (onlineClientKeys == "value_undefined" || onlineClientKeys == null) {
             let userInput = prompt('Valid keys could not be retrieved online. Enter keys if you have them. Join the StateFarm Network Discord server to generate keys! https://discord.gg/HYJG3jXVJF', '');
