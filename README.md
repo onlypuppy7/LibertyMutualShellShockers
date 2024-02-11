@@ -5,7 +5,7 @@ GitHub page: https://github.com/onlypuppy7/LibertyMutualShellShockers
 
 ## Usage:
 
-Hold right mouse button to aimlock. To configure ESP, open code and look for config comments.
+Hold right mouse button to aimlock. To configure ESP, open code and look for config comments. 
 
 ## How was this made?
 
