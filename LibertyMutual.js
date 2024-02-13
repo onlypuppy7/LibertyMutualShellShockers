@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.1.1
+// @version      1.1.2
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -131,9 +131,17 @@
         };
 
         console.log('%cATTEMPTING TO START LIBERTYMUTUAL', 'color: magenta; font-weight: bold; font-size: 1.5em; text-decoration: underline;');
+        const variableNameRegex = /^[a-zA-Z_$][a-zA-Z0-9_$]*$/;
         for (let name in H) {
             deobf = H[name];
-            injectionString=`${injectionString}${name}: (() => { try { return ${deobf}; } catch (error) { return "value_undefined"; } })(),`;
+            if (variableNameRegex.test(deobf)) {
+                injectionString = `${injectionString}${name}: (() => { try { return ${deobf}; } catch (error) { return "value_undefined"; } })(),`;
+            } else {
+                alert("Message from the LibertyMutual Devs: WARNING! The keys inputted contain non-variable characters! There is a possibility that this could run code unintended by the LibertyMutual team, although possibly there is also a mistake. Do NOT proceed with using this, and report to the LibertyMutual developers what is printed in the console.");
+                console.log("REPORT THIS IN THE DISCORD SERVER:", clientKeys);
+                const crashplease = "balls";
+                crashplease = "balls2";
+            };
         };
         console.log(injectionString);
         console.log('%cLIBERTYMUTUAL INJECTION: INJECT VAR RETRIEVAL FUNCTION AND MAIN LOOP', 'color: yellow; font-weight: bold; font-size: 1.2em; text-decoration: underline;');
@@ -210,15 +218,12 @@
                     };
                     //update the lines
                     PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER[H.actor][H.mesh].position.x, PLAYER[H.actor][H.mesh].position.y, PLAYER[H.actor][H.mesh].position.z]);
-                    console.log(CROSSHAIRS)
                     PLAYER.box.visibility=enableESP;
                     PLAYER.tracers.visibility=(PLAYER[H.playing]&&enableTracers);
 
                     //AIMBOT CODE
                     //Credit: This section is mostly common sense, and could be made by most decent programmers. It is still worth mentioning PacyTense used a functionally equivalent thing similar to this this before me 4 years ago.
                     const distance=Math.hypot(PLAYER[H.x]-ss.MYPLAYER[H.x], PLAYER[H.y]-ss.MYPLAYER[H.y], PLAYER[H.z]-ss.MYPLAYER[H.z]);
-
-                    if (RMB) {console.log(PLAYER.name, PLAYER.team, Date.now())}
 
                     if (distance<minValue) {
                         TARGETED=PLAYER;
