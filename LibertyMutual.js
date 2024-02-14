@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.1.2
+// @version      1.2.0
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -10,6 +10,7 @@
 // @run-at       document-start
 // @icon         https://github.com/onlypuppy7/LibertyMutualShellShockers/blob/main/scripticon.jpg?raw=true
 // @require      https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js
+// @require      https://cdn.jsdelivr.net/npm/babylonjs@3.3.0/babylon.min.js
 // ==/UserScript==
 
 //Usage: Hold right mouse button to aimlock
@@ -158,13 +159,18 @@
     createAnonFunction("retrieveFunctions",function(vars) { ss=vars ; F.LIBERTYMUTUAL() });
 
     createAnonFunction("LIBERTYMUTUAL",function() {
-        globalSS = ss;
+        // globalSS = ss;
+        
+        ss.PLAYERS.forEach(PLAYER=>{
+            if (PLAYER.hasOwnProperty("ws")) {
+                ss.MYPLAYER = PLAYER
+            };
+        });
 
-        ss.BABYLONJS.Vector3 = ss.MYPLAYER.constructor.v1.constructor;
         H.actor = findKeyWithProperty(ss.MYPLAYER,H.mesh);
 
         let TARGETED;
-        let CROSSHAIRS=new ss.BABYLONJS.Vector3();
+        let CROSSHAIRS=new BABYLON.Vector3();
         CROSSHAIRS.copyFrom(ss.MYPLAYER[H.actor][H.mesh].position);
         const horizontalOffset = Math.sin(ss.MYPLAYER[H.actor][H.mesh].rotation.y);
         const verticalOffset = Math.sin(-ss.MYPLAYER[H.pitch]);
@@ -185,14 +191,14 @@
                         //ESP BOXES
                         const boxSize = {width: 0.4, height: 0.65, depth: 0.4};
                         const vertices = [
-                            new ss.BABYLONJS.Vector3(-boxSize.width / 2, 0, -boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(boxSize.width / 2, 0, -boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(boxSize.width / 2, 0 + boxSize.height, -boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(-boxSize.width / 2, 0 + boxSize.height, -boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(-boxSize.width / 2, 0, boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(boxSize.width / 2, 0, boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(boxSize.width / 2, 0 + boxSize.height, boxSize.depth / 2),
-                            new ss.BABYLONJS.Vector3(-boxSize.width / 2, 0 + boxSize.height, boxSize.depth / 2),
+                            new BABYLON.Vector3(-boxSize.width / 2, 0, -boxSize.depth / 2),
+                            new BABYLON.Vector3(boxSize.width / 2, 0, -boxSize.depth / 2),
+                            new BABYLON.Vector3(boxSize.width / 2, 0 + boxSize.height, -boxSize.depth / 2),
+                            new BABYLON.Vector3(-boxSize.width / 2, 0 + boxSize.height, -boxSize.depth / 2),
+                            new BABYLON.Vector3(-boxSize.width / 2, 0, boxSize.depth / 2),
+                            new BABYLON.Vector3(boxSize.width / 2, 0, boxSize.depth / 2),
+                            new BABYLON.Vector3(boxSize.width / 2, 0 + boxSize.height, boxSize.depth / 2),
+                            new BABYLON.Vector3(-boxSize.width / 2, 0 + boxSize.height, boxSize.depth / 2),
                         ];
                         const lines = [];
                         for (let i = 0; i < 4; i++) {
@@ -200,14 +206,14 @@
                             lines.push([vertices[i + 4], vertices[(i + 1) % 4 + 4]]);
                             lines.push([vertices[i], vertices[i + 4]]);
                         };
-                        const box = ss.BABYLONJS[H.MeshBuilder].CreateLineSystem(getScrambled(), { lines }, PLAYER[H.actor].scene);
+                        const box = BABYLON.MeshBuilder.CreateLineSystem(getScrambled(), { lines }, PLAYER[H.actor].scene);
                         //ChatGPT prompt: "how can i make an object anchored to another object, change its color, and have it render on top of everything else? babylon.js"
-                        box.color = new ss.BABYLONJS.Color3(1, 1, 1);
+                        box.color = new BABYLON.Color3(1, 1, 1);
                         box.renderingGroupId = 1;
                         box.parent=PLAYER[H.actor][H.mesh];
                         //TRACER LINES
-                        const tracers=ss.BABYLONJS[H.MeshBuilder][H.CreateLines]('lines', { points: [PLAYER[H.actor][H.mesh].position, CROSSHAIRS] }, PLAYER[H.actor].scene);
-                        tracers.color=new ss.BABYLONJS.Color3(1, 1, 1);
+                        const tracers=BABYLON.MeshBuilder.CreateLines('lines', { points: [PLAYER[H.actor][H.mesh].position, CROSSHAIRS] }, PLAYER[H.actor].scene);
+                        tracers.color=new BABYLON.Color3(1, 1, 1);
                         tracers.alwaysSelectAsActiveMesh = true;
                         tracers.renderingGroupId=1;
                         
@@ -217,7 +223,7 @@
                         ESPArray.push([box,tracers,PLAYER]);
                     };
                     //update the lines
-                    PLAYER.tracers.setVerticesData(ss.BABYLONJS.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER[H.actor][H.mesh].position.x, PLAYER[H.actor][H.mesh].position.y, PLAYER[H.actor][H.mesh].position.z]);
+                    PLAYER.tracers.setVerticesData(BABYLON.VertexBuffer.PositionKind, [CROSSHAIRS.x, CROSSHAIRS.y, CROSSHAIRS.z, PLAYER[H.actor][H.mesh].position.x, PLAYER[H.actor][H.mesh].position.y, PLAYER[H.actor][H.mesh].position.z]);
                     PLAYER.box.visibility=enableESP;
                     PLAYER.tracers.visibility=(PLAYER[H.playing]&&enableTracers);
 
