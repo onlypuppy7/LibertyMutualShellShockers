@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.2.0
+// @version      1.2.1
 // @author       onlypuppy7
 // @description  FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -17,7 +17,7 @@
 //This script is more of a template than a functioning tool. If you're modifying this, you can add a GUI to start!
 
 (function () {
-    //Config: if you want to turn off esp, you can.
+    document.getElementById("loadSS").innerHTML=(document.getElementById("loadSS").innerHTML).replace(/>/g,"=");
 
     const enableESP=true; //turn to false for off
     const enableTracers=true; //turn to false for off
