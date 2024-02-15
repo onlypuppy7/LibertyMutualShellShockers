@@ -2,7 +2,7 @@
 // @name         LibertyMutualV1 For Shell Shockers
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.2.2
+// @version      1.2.3
 // @author       onlypuppy7
 // @description  UPDATED FOR 0.47.0! Fed up of a popular script injecting ads into your game? Need a simple script to modify or use? FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -17,10 +17,10 @@
 //This script is more of a template than a functioning tool. If you're modifying this, you can add a GUI to start!
 
 (function () {
-    window.originalReplace = String.prototype.replace;
+    let originalReplace = String.prototype.replace;
 
     String.prototype.originalReplace = function() {
-        return window.originalReplace.apply(this, arguments);
+        return originalReplace.apply(this, arguments);
     };
 
     const enableESP=true; //turn to false for off
