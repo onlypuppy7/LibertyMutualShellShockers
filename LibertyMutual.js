@@ -2,15 +2,15 @@
 // @name         Shell Shockers Basic Aimbot + ESP: LibertyMutualV1
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.2.4
+// @version      1.3.0
 // @author       onlypuppy7
-// @description  UPDATED FOR 0.47.7! Fed up of a popular script injecting ads into your game? Need a simple script to modify or use? FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
+// @description  UPDATED FOR 0.50.0! Fed up of a popular script injecting ads into your game? Need a simple script to modify or use? FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
 // @grant        none
 // @run-at       document-start
 // @icon         https://github.com/onlypuppy7/LibertyMutualShellShockers/blob/main/scripticon.jpg?raw=true
 // @require      https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js
-// @require      https://cdn.jsdelivr.net/npm/babylonjs@3.3.0/babylon.min.js
+// @require      https://cdn.jsdelivr.net/npm/babylonjs@7.15.0/babylon.min.js
 // ==/UserScript==
 
 //Usage: Hold right mouse button to aimlock
@@ -176,11 +176,18 @@
         let TARGETED;
         let CROSSHAIRS=new BABYLON.Vector3();
         CROSSHAIRS.copyFrom(ss.MYPLAYER[H.actor][H.mesh].position);
-        const horizontalOffset = Math.sin(ss.MYPLAYER[H.actor][H.mesh].rotation.y);
-        const verticalOffset = Math.sin(-ss.MYPLAYER[H.pitch]);
-        CROSSHAIRS.x+=horizontalOffset;
-        CROSSHAIRS.y+=verticalOffset+0.4;
-        CROSSHAIRS.z+=Math.cos(ss.MYPLAYER[H.actor][H.mesh].rotation.y);
+
+        // eye level
+        CROSSHAIRS.y += 0.4;
+        const forwardOffset = -5; 
+        const yaw = ss.MYPLAYER[H.yaw];
+        const pitch = -ss.MYPLAYER[H.pitch];
+        const forwardX = Math.sin(yaw) * Math.cos(pitch);
+        const forwardY = Math.sin(pitch);
+        const forwardZ = Math.cos(yaw) * Math.cos(pitch);
+        CROSSHAIRS.x += forwardX * forwardOffset;
+        CROSSHAIRS.y += forwardY * forwardOffset;
+        CROSSHAIRS.z += forwardZ * forwardOffset;
 
         const timecode=Date.now();
         let minValue=99999;
@@ -244,9 +251,9 @@
             if (RMB && TARGETED && TARGETED[H.playing]) {
                 //3D maths
                 const directionVector={
-                    [H.x]: TARGETED[H.x]-ss.MYPLAYER[H.x],
-                    [H.y]: TARGETED[H.y]-ss.MYPLAYER[H.y]-0.05,
-                    [H.z]: TARGETED[H.z]-ss.MYPLAYER[H.z],
+                    [H.x]: -(TARGETED[H.x]-ss.MYPLAYER[H.x]),
+                    [H.y]: -(TARGETED[H.y]-ss.MYPLAYER[H.y]-0.05),
+                    [H.z]: -(TARGETED[H.z]-ss.MYPLAYER[H.z]),
                 };
                 ss.MYPLAYER[H.yaw]=F.calculateYaw(directionVector);
                 ss.MYPLAYER[H.pitch]=F.calculatePitch(directionVector);
