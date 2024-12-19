@@ -2,7 +2,7 @@
 // @name         Shell Shockers Basic Aimbot + ESP: LibertyMutualV1
 // @namespace    https://github.com/onlypuppy7/LibertyMutualShellShockers/
 // @license      GPL-3.0
-// @version      1.3.0
+// @version      1.3.1
 // @author       onlypuppy7
 // @description  UPDATED FOR 0.50.0! Fed up of a popular script injecting ads into your game? Need a simple script to modify or use? FOSS ESP, Tracers and Aimbot. Hold right mouse button to aimlock.
 // @match        https://shellshock.io/*
@@ -58,13 +58,13 @@
         if (event.button === 2) {
             RMB = true;
         }
-    });
+    }, true);
 
     document.addEventListener('mouseup', function(event) {
         if (event.button === 2) {
             RMB = false;
         }
-    });
+    }, true);
 
     //scrambled... geddit????
     const getScrambled=function(){return Array.from({length: 10}, () => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('')}
