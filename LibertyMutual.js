@@ -17,6 +17,9 @@
 //This script is more of a template than a functioning tool. If you're modifying this, you can add a GUI to start!
 
 (function () {
+    // crackedshell is a script executor for chromebooks
+    let crackedShell = typeof $WEBSOCKET !== 'undefined';
+
     let originalReplace = String.prototype.replace;
 
     String.prototype.originalReplace = function() {
@@ -104,8 +107,12 @@
     };
 
     const applyLibertyMutual = function(js) {
+        // support crackedshell's harsh rewriting system
+        // more info @ https://github.com/VillainsRule/CrackedShell
+        let clientKeyJS = js;
+        if (crackedShell) clientKeyJS = fetchTextContent('/js/shellshock.og.js');
 
-        let hash = CryptoJS.SHA256(js).toString(CryptoJS.enc.Hex);
+        let hash = CryptoJS.SHA256(clientKeyJS).toString(CryptoJS.enc.Hex);
         let clientKeys;
         onlineClientKeys = fetchTextContent("https://raw.githubusercontent.com/StateFarmNetwork/client-keys/main/libertymutual_"+hash+".json"); //credit: me :D
 
